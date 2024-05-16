@@ -12,6 +12,9 @@ import (
 	golog "github.com/ipfs/go-log/v2"
 	joonix "github.com/joonix/log"
 	"github.com/pkg/errors"
+	"github.com/sirupsen/logrus"
+	"github.com/urfave/cli/v2"
+
 	"github.com/prysmaticlabs/prysm/v5/beacon-chain/builder"
 	"github.com/prysmaticlabs/prysm/v5/beacon-chain/node"
 	"github.com/prysmaticlabs/prysm/v5/cmd"
@@ -21,7 +24,7 @@ import (
 	"github.com/prysmaticlabs/prysm/v5/cmd/beacon-chain/flags"
 	jwtcommands "github.com/prysmaticlabs/prysm/v5/cmd/beacon-chain/jwt"
 	"github.com/prysmaticlabs/prysm/v5/cmd/beacon-chain/storage"
-	backfill "github.com/prysmaticlabs/prysm/v5/cmd/beacon-chain/sync/backfill"
+	"github.com/prysmaticlabs/prysm/v5/cmd/beacon-chain/sync/backfill"
 	bflags "github.com/prysmaticlabs/prysm/v5/cmd/beacon-chain/sync/backfill/flags"
 	"github.com/prysmaticlabs/prysm/v5/cmd/beacon-chain/sync/checkpoint"
 	"github.com/prysmaticlabs/prysm/v5/cmd/beacon-chain/sync/genesis"
@@ -35,8 +38,6 @@ import (
 	_ "github.com/prysmaticlabs/prysm/v5/runtime/maxprocs"
 	"github.com/prysmaticlabs/prysm/v5/runtime/tos"
 	"github.com/prysmaticlabs/prysm/v5/runtime/version"
-	"github.com/sirupsen/logrus"
-	"github.com/urfave/cli/v2"
 )
 
 var appFlags = []cli.Flag{
@@ -279,9 +280,8 @@ func startNode(ctx *cli.Context, cancel context.CancelFunc) error {
 		// libp2p specific logging.
 		golog.SetAllLoggers(golog.LevelDebug)
 		// Geth specific logging.
-		glogger := gethlog.NewGlogHandler(gethlog.StreamHandler(os.Stderr, gethlog.TerminalFormat(true)))
-		glogger.Verbosity(gethlog.LvlTrace)
-		gethlog.Root().SetHandler(glogger)
+		glogger := gethlog.New()
+		gethlog.SetDefault(glogger)
 	}
 
 	blockchainFlagOpts, err := blockchaincmd.FlagOptions(ctx)

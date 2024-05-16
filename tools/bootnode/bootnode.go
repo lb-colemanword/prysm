@@ -19,7 +19,6 @@ import (
 	"io"
 	"net"
 	"net/http"
-	"os"
 	"time"
 
 	gcrypto "github.com/ethereum/go-ethereum/crypto"
@@ -32,6 +31,8 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/prysmaticlabs/go-bitfield"
+	"github.com/sirupsen/logrus"
+
 	"github.com/prysmaticlabs/prysm/v5/async"
 	"github.com/prysmaticlabs/prysm/v5/beacon-chain/core/signing"
 	"github.com/prysmaticlabs/prysm/v5/config/params"
@@ -42,7 +43,6 @@ import (
 	pb "github.com/prysmaticlabs/prysm/v5/proto/prysm/v1alpha1"
 	_ "github.com/prysmaticlabs/prysm/v5/runtime/maxprocs"
 	"github.com/prysmaticlabs/prysm/v5/runtime/version"
-	"github.com/sirupsen/logrus"
 )
 
 var (
@@ -81,9 +81,8 @@ func main() {
 		logrus.SetLevel(logrus.DebugLevel)
 
 		// Geth specific logging.
-		glogger := gethlog.NewGlogHandler(gethlog.StreamHandler(os.Stderr, gethlog.TerminalFormat(false)))
-		glogger.Verbosity(gethlog.LvlTrace)
-		gethlog.Root().SetHandler(glogger)
+		glogger := gethlog.New()
+		gethlog.SetDefault(glogger)
 
 		log.Debug("Debug logging enabled.")
 	}

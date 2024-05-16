@@ -2,6 +2,7 @@ package kzg
 
 import (
 	GoKZG "github.com/crate-crypto/go-kzg-4844"
+
 	"github.com/prysmaticlabs/prysm/v5/consensus-types/blocks"
 )
 
@@ -11,8 +12,9 @@ func Verify(sidecars ...blocks.ROBlob) error {
 		return nil
 	}
 	if len(sidecars) == 1 {
+		blob := bytesToBlob(sidecars[0].Blob)
 		return kzgContext.VerifyBlobKZGProof(
-			bytesToBlob(sidecars[0].Blob),
+			&blob,
 			bytesToCommitment(sidecars[0].KzgCommitment),
 			bytesToKZGProof(sidecars[0].KzgProof))
 	}

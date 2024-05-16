@@ -5,9 +5,10 @@ import (
 	"testing"
 
 	pubsub "github.com/libp2p/go-libp2p-pubsub"
+	logTest "github.com/sirupsen/logrus/hooks/test"
+
 	"github.com/prysmaticlabs/prysm/v5/runtime/messagehandler"
 	"github.com/prysmaticlabs/prysm/v5/testing/require"
-	logTest "github.com/sirupsen/logrus/hooks/test"
 )
 
 func TestSafelyHandleMessage(t *testing.T) {
@@ -15,7 +16,6 @@ func TestSafelyHandleMessage(t *testing.T) {
 
 	messagehandler.SafelyHandleMessage(context.Background(), func(_ context.Context, _ *pubsub.Message) error {
 		panic("bad!")
-		return nil
 	}, &pubsub.Message{})
 
 	require.LogsContain(t, hook, "Panicked when handling p2p message!")
@@ -26,7 +26,6 @@ func TestSafelyHandleMessage_NoData(t *testing.T) {
 
 	messagehandler.SafelyHandleMessage(context.Background(), func(_ context.Context, _ *pubsub.Message) error {
 		panic("bad!")
-		return nil
 	}, nil)
 
 	entry := hook.LastEntry()
